@@ -43,13 +43,18 @@ def main_menu():
 	for item in data['items']:
 		items.append(format_menu_item(item))
 
+	items.append ({
+		"label": "Search",
+		"path": plugin.url_for('search')
+	})
+
 	return items
 
 
 
 @plugin.route('/folders/<folderid>/')
 def show_folder_content(folderid):
-	data = httpgetjson('http://localhost:3000/folder1/folder.json')
+	data = httpgetjson('http://localhost:3000/'+folderid+'/folder.json')
 
 	items = []
 	for item in data['items']:
@@ -58,6 +63,21 @@ def show_folder_content(folderid):
 	return items
 
 
+@plugin.route('/search/')
+def search():
+	search_string = plugin.keyboard(default=None, heading="Heading ...")
+	
+	if search_string:
+		url = plugin.url_for('show_folder_content', folderid='folder' + search_string)
+		plugin.redirect(url)
+
+
+def testitemsdata():
+	data = httpgetjson('http://localhost:3000/folder1/folder.json')
+	items = []
+	for item in data['items']:
+		items.append(format_menu_item(item))
+	return items
 
 if __name__ == '__main__':
 	plugin.run()
