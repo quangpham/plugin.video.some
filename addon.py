@@ -44,7 +44,7 @@ def main_menu():
 		items.append(format_menu_item(item))
 
 	items.append ({
-		"label": "Search",
+		"label": "Karaoke Search",
 		"path": plugin.url_for('search')
 	})
 
@@ -62,22 +62,19 @@ def show_folder_content(folderid):
 
 	return items
 
+@plugin.route('/karaoke/<karoke_number>/')
+def show_karoke_number(karoke_number):
+	response = httpgetjson('http://localhost:3000/api/v1/karaokes/' + karoke_number)
+	if response.get('content'):
+		item = format_menu_item(response['content'])
+		return [item]
 
 @plugin.route('/search/')
 def search():
 	search_string = plugin.keyboard(default=None, heading="Heading ...")
-	
 	if search_string:
-		url = plugin.url_for('show_folder_content', folderid='folder' + search_string)
-		plugin.redirect(url)
+		plugin.redirect(plugin.url_for('show_karoke_number', karoke_number=search_string))
 
-
-def testitemsdata():
-	data = httpgetjson('http://localhost:3000/folder1/folder.json')
-	items = []
-	for item in data['items']:
-		items.append(format_menu_item(item))
-	return items
 
 if __name__ == '__main__':
 	plugin.run()
